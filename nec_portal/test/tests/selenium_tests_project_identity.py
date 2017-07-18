@@ -10,7 +10,6 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 #
-#
 
 
 """Test 'Self Identity'.
@@ -21,7 +20,7 @@ Please operate setting.
     - admin
   Step3. Create Roles
     - C__Global__ProjectAdmin
-  Step4. Setup Plilcy Files(for GlobalPortal DC1)
+  Step4. Setup Policy Files(for GlobalPortal DC1)
     - /etc/openstack-dashboard/keystone_policy.json
     - systemctl restart httpd
   Step5. Change Selenium Parameters
@@ -148,15 +147,14 @@ CREATE_USER_A = '!!!test_userA'
 
 CREATE_PROJECT_B = '!!!test_projectB'
 CREATE_USER_B = '!!!test_userB'
-CRAETE_GROUP_B = '!!!test_groupB'
+CREATE_GROUP_B = '!!!test_groupB'
 
 
 class BrowserTests(test.SeleniumTestCase):
-    """This test will output the capture of announcens."""
+    """Selenium Test of Browser"""
 
     def setUp(self):
-        """Set the Remote instance of WebDriver."""
-
+        """Setup selenium settings"""
         super(BrowserTests, self).setUp()
 
         # One setting of the browser is necessary
@@ -401,7 +399,7 @@ class BrowserTests(test.SeleniumTestCase):
 
         time.sleep(SET_LONG_WAIT)
         self.click_xpath(
-            '//span[@class="dropdown-title"][contains(text(),"%s")]'
+            '//span[@class="dropdown-title"][contains(text(), "%s")]'
             % project_name)
 
     # ==================================================
@@ -424,7 +422,7 @@ class BrowserTests(test.SeleniumTestCase):
         time.sleep(SET_LONG_WAIT)
 
         self.click_xpath(
-            '//tr[td[div[div[a[contains(./text(),"%s")]]]]]//label'
+            '//tr[td[a[contains(text(), "%s")]]]//label'
             % CREATE_PROJECT_A)
         self.click_and_sleep('tenants__action_delete', SET_LONG_WAIT)
         self.save_screenshot()
@@ -447,7 +445,13 @@ class BrowserTests(test.SeleniumTestCase):
         self.fill_field('id_password', 'xxxx')
         self.fill_field_clear('id_confirm_password')
         self.fill_field('id_confirm_password', 'xxxx')
-        self.set_select_visible_text('id_project', CREATE_PROJECT_A)
+        select_project_xpath = '//div[contains(@class, "input-group")]'
+        self.click_xpath(select_project_xpath +
+                         '//button[contains(@class, '
+                         '"btn btn-default dropdown-toggle")]')
+        self.click_xpath(select_project_xpath +
+                         '//a[contains(text(), "%s")]' %
+                         CREATE_PROJECT_A)
         self.save_screenshot()
 
         self.click_css('input[type=submit]')
@@ -459,7 +463,7 @@ class BrowserTests(test.SeleniumTestCase):
         time.sleep(SET_LONG_WAIT)
 
         self.click_xpath_and_ajax_wait(
-            '//tr[td[div[div[a[contains(./text(),"%s")]]]]]//label'
+            '//tr[td[a[contains(text(), "%s")]]]//label'
             % CREATE_USER_A)
         self.click_and_sleep('users__action_delete', SET_LONG_WAIT)
         self.save_screenshot()
@@ -476,20 +480,20 @@ class BrowserTests(test.SeleniumTestCase):
 
         # Open role form
         self.click_xpath(
-            '//tr[td[div[div[a[contains(./text(),"%s")]]]]]'
+            '//tr[td[a[contains(text(), "%s")]]]'
             '//a[contains(@href, "update_members")]' % CREATE_PROJECT_A)
 
         drop_down_xpath = '//div[@id="update_members_members"]'
-        '//ul[li[span[contains(./text(),"%s")]]]' % CREATE_USER_A
+        '//ul[li[span[contains(text(), "%s")]]]' % CREATE_USER_A
 
-        # Open role dorp down
+        # Open role drop down
         time.sleep(SET_TIMEOUT)
         self.click_xpath(drop_down_xpath + '//a[@href="#"]')
         time.sleep(SET_TIMEOUT)
         # Add admin role
         self.click_xpath(
             drop_down_xpath +
-            '//ul//li[a[contains(./text(),"C__Global__ProjectAdmin")]]')
+            '//ul//li[a[contains(text(), "C__Global__ProjectAdmin")]]')
 
         # Save
         self.click_css('input[type=submit]')
@@ -518,11 +522,11 @@ class BrowserTests(test.SeleniumTestCase):
 
         self.click_css("a[title=\"Expand\"]")
 
-        update_xpath = '//tr[td[a[contains(./text(),"%s")]]]' \
+        update_xpath = '//tr[td[a[contains(./text(), "%s")]]]' \
             % CREATE_PROJECT_B
 
         self.click_xpath(update_xpath + '//a[@href="#"]')
-        self.click_xpath(update_xpath + '//a[contains(@href,"/update/")]')
+        self.click_xpath(update_xpath + '//a[contains(@href, "/update/")]')
         self.fill_field_clear('id_description')
         self.fill_field('id_description', 'test_projectB')
         self.save_screenshot()
@@ -537,7 +541,7 @@ class BrowserTests(test.SeleniumTestCase):
 
         self.click_css("a[title=\"Expand\"]")
 
-        delete_xpath = '//tr[td[a[contains(./text(),"%s")]]]' \
+        delete_xpath = '//tr[td[a[contains(./text(), "%s")]]]' \
             % CREATE_PROJECT_B
 
         self.click_xpath(delete_xpath + '//label')
@@ -557,17 +561,17 @@ class BrowserTests(test.SeleniumTestCase):
 
         self.click_css("a[title=\"Expand\"]")
 
-        update_xpath = '//tr[td[a[contains(./text(),"%s")]]]' \
+        update_xpath = '//tr[td[a[contains(./text(), "%s")]]]' \
             % CREATE_PROJECT_B
 
         self.click_xpath(
-            update_xpath + '//a[contains(@href,"/manage_members/")]')
+            update_xpath + '//a[contains(@href, "/manage_members/")]')
 
         self.click_and_sleep('project_members__action_add_user_link',
                              SET_LONG_WAIT)
 
         self.click_xpath(
-            '//tr[td[contains(./text(),"%s")]]//label' % CREATE_USER_B)
+            '//tr[td[contains(./text(), "%s")]]//label' % CREATE_USER_B)
         self.click_and_sleep('project_non_members__action_addMember',
                              SET_LONG_WAIT)
         self.save_screenshot()
@@ -582,14 +586,14 @@ class BrowserTests(test.SeleniumTestCase):
 
         self.click_css("a[title=\"Expand\"]")
 
-        update_xpath = '//tr[td[a[contains(./text(),"%s")]]]' \
+        update_xpath = '//tr[td[a[contains(text(), "%s")]]]' \
             % CREATE_PROJECT_B
 
         self.click_xpath(
-            update_xpath + '//a[contains(@href,"/manage_members/")]')
+            update_xpath + '//a[contains(@href, "/manage_members/")]')
 
         self.click_xpath(
-            '//tr[td[contains(./text(),"%s")]]//label' % CREATE_USER_B)
+            '//tr[td[contains(text(), "%s")]]//label' % CREATE_USER_B)
         time.sleep(SET_TIMEOUT)
         self.click_and_sleep('project_members__action_remove_project_member',
                              SET_LONG_WAIT)
@@ -625,11 +629,11 @@ class BrowserTests(test.SeleniumTestCase):
         self.trans('/project/users/')
         time.sleep(SET_LONG_WAIT)
 
-        update_xpath = '//tr[td[a[contains(./text(),"%s")]]]' \
+        update_xpath = '//tr[td[a[contains(./text(), "%s")]]]' \
             % CREATE_USER_B
 
         self.click_xpath(
-            update_xpath + '//a[contains(@href,"/update/")]')
+            update_xpath + '//a[contains(@href, "/update/")]')
 
         self.fill_field_clear('id_email')
         self.fill_field('id_email', 'test_userBB@example.com')
@@ -643,7 +647,7 @@ class BrowserTests(test.SeleniumTestCase):
         self.trans('/project/users/')
         time.sleep(SET_LONG_WAIT)
 
-        delete_xpath = '//tr[td[a[contains(./text(),"%s")]]]' \
+        delete_xpath = '//tr[td[a[contains(text(), "%s")]]]' \
             % CREATE_USER_B
 
         self.click_xpath(delete_xpath + '//label')
@@ -663,7 +667,7 @@ class BrowserTests(test.SeleniumTestCase):
 
         self.click_and_sleep('groups__action_create', SET_LONG_WAIT)
         self.fill_field_clear('id_name')
-        self.fill_field('id_name', CRAETE_GROUP_B)
+        self.fill_field('id_name', CREATE_GROUP_B)
         self.fill_field_clear('id_description')
         self.fill_field('id_description', 'test_groupB')
         self.save_screenshot()
@@ -676,11 +680,11 @@ class BrowserTests(test.SeleniumTestCase):
         self.trans('/project/groups/')
         time.sleep(SET_LONG_WAIT)
 
-        update_xpath = '//tr[td[contains(./text(),"%s")]]' \
-            % CRAETE_GROUP_B
+        update_xpath = '//tr[td[contains(./text(), "%s")]]' \
+            % CREATE_GROUP_B
 
         self.click_xpath(update_xpath + '//a[@href="#"]')
-        self.click_xpath(update_xpath + '//a[contains(@href,"/update/")]')
+        self.click_xpath(update_xpath + '//a[contains(@href, "/update/")]')
 
         self.fill_field_clear('id_description')
         self.fill_field('id_description', 'test_groupBB')
@@ -694,8 +698,8 @@ class BrowserTests(test.SeleniumTestCase):
         self.trans('/project/groups/')
         time.sleep(SET_LONG_WAIT)
 
-        delete_xpath = '//tr[td[contains(./text(),"%s")]]' \
-            % CRAETE_GROUP_B
+        delete_xpath = '//tr[td[contains(text(), "%s")]]' \
+            % CREATE_GROUP_B
 
         self.click_xpath(delete_xpath + '//label')
 
@@ -712,11 +716,11 @@ class BrowserTests(test.SeleniumTestCase):
         self.trans('/project/groups/')
         time.sleep(SET_LONG_WAIT)
 
-        update_xpath = '//tr[td[contains(./text(),"%s")]]' \
-            % CRAETE_GROUP_B
+        update_xpath = '//tr[td[contains(text(), "%s")]]' \
+            % CREATE_GROUP_B
 
         self.click_xpath(
-            update_xpath + '//a[contains(@href,"/manage_members/")]')
+            update_xpath + '//a[contains(@href, "/manage_members/")]')
         self.save_screenshot()
 
         self.click_and_sleep('group_members__action_add_user_link',
@@ -724,7 +728,7 @@ class BrowserTests(test.SeleniumTestCase):
         self.save_screenshot()
 
         self.click_xpath(
-            '//tr[td[contains(./text(), "%s")]]//label' % CREATE_USER_B)
+            '//tr[td[contains(text(), "%s")]]//label' % CREATE_USER_B)
         self.save_screenshot()
 
         self.click_and_sleep('group_non_members__action_addMember',
@@ -736,15 +740,15 @@ class BrowserTests(test.SeleniumTestCase):
         self.trans('/project/groups/')
         time.sleep(SET_LONG_WAIT)
 
-        update_xpath = '//tr[td[contains(./text(),"%s")]]' \
-            % CRAETE_GROUP_B
+        update_xpath = '//tr[td[contains(text(), "%s")]]' \
+            % CREATE_GROUP_B
 
         self.click_xpath(
-            update_xpath + '//a[contains(@href,"/manage_members/")]')
+            update_xpath + '//a[contains(@href, "/manage_members/")]')
         self.save_screenshot()
 
         self.click_xpath(
-            '//tr[td[contains(./text(),"%s")]]//label' % CREATE_USER_B)
+            '//tr[td[contains(text(), "%s")]]//label' % CREATE_USER_B)
         self.click_and_sleep('group_members__action_removeGroupMember',
                              SET_LONG_WAIT)
         self.save_screenshot()

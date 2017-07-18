@@ -10,7 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 #
-# 
+#
 
 # The slug of the panel to be added to HORIZON_CONFIG. Required.
 PANEL = 'Projects'

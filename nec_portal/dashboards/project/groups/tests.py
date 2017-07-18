@@ -157,15 +157,17 @@ class GroupsViewTests(test.BaseAdminViewTests):
         self.assertRedirectsNoFollow(res, GROUP_MANAGE_URL)
         self.assertMessageCount(success=1)
 
-    @test.create_stubs({project_identity: ('group_user_list',)})
+    @test.create_stubs({project_identity: ('group_user_list',
+                                           'remove_group_user',)})
     def test_remove_user(self):
         group = self.groups.get(id="1")
         group_members = self.users.list()
         user = self.users.get(id="2")
 
-        project_identity.group_user_list(project=IsA('str'),
-                                         group=group.id).\
-            AndReturn(group_members)
+        project_identity.group_user_list(
+            project=IsA('str'), group=group.id).AndReturn(group_members)
+        project_identity.remove_group_user(
+            IsA(http.HttpRequest), group_id=group.id, user_id=user.id)
 
         self.mox.ReplayAll()
 

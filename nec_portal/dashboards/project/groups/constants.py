@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 #
+#
 
 GROUPS_INDEX_URL = 'horizon:project:groups:index'
 GROUPS_INDEX_VIEW_TEMPLATE = 'project/groups/index.html'

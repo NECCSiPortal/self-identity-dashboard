@@ -10,7 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 #
-# 
+#
 
 from django.core import exceptions as django_exceptions
 from django.template import defaultfilters

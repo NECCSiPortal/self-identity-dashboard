@@ -10,10 +10,11 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 #
+#
 
 KEYSTONE_ADMIN_SETTING = {
     'username': 'admin',
-    'password': 'xxxx',
+    'PASSWORD': 'xxxx',
     'tenant_name': 'admin',
     'auth_url': 'http://127.0.0.1:5000/v3',
     'region_name': ''

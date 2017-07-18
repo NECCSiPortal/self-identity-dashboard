@@ -5,9 +5,7 @@
 {% block title %}{% trans "User Details" %}{% endblock %}
 
 {% block page_header %}
-  <div class='page-header'>
-    {% breadcrumb_nav %}
-  </div>
+  {% include "horizon/common/_detail_header.html" %}
 {% endblock %}
 
 {% block main %}

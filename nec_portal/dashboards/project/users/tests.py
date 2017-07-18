@@ -137,12 +137,21 @@ class UsersViewTests(test.BaseAdminViewTests):
         self.assertNoFormErrors(res)
         self.assertMessageCount(success=1)
 
-    @test.create_stubs({project_identity: ('user_get',)})
+    @test.create_stubs({project_identity: ('project_get',
+                                           'user_get',
+                                           'domain_get',)})
     def test_detail_view(self):
         user = self.users.get(id="1")
-        self.tenants.get(id=user.project_id)
+        domain = self.domains.get(id=user.domain_id)
+        project = self.tenants.get(id=user.project_id)
 
-        project_identity.user_get(IsA(http.HttpRequest), '1').AndReturn(user)
+        project_identity.user_get(
+            IsA(http.HttpRequest), user.id).AndReturn(user)
+        project_identity.project_get(
+            IsA(http.HttpRequest), user.project_id,
+            admin=True).AndReturn(project)
+        project_identity.domain_get(
+            IsA(http.HttpRequest), user.domain_id).AndReturn(domain)
         self.mox.ReplayAll()
 
         res = self.client.get(USER_DETAIL_URL, args=[user.id])
@@ -150,7 +159,7 @@ class UsersViewTests(test.BaseAdminViewTests):
         self.assertTemplateUsed(res, 'project/users/detail.html')
         self.assertEqual(res.context['user'].name, user.name)
         self.assertEqual(res.context['user'].id, user.id)
-        self.assertContains(res, user.name, 3, 200)
+        self.assertContains(res, user.name, 4, 200)
 
     @test.create_stubs({project_identity: ('project_user_list',)})
     def test_delete_user(self):

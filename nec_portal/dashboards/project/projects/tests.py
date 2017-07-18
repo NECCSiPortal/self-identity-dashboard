@@ -86,7 +86,7 @@ class DetailProjectViewTests(test.BaseAdminViewTests):
         self.assertEqual(res.context['project'].parent_id, 'parent_1')
         self.assertEqual(res.context["parent_project_name"],
                          parent_project.name)
-        self.assertContains(res, project.name, 3, 200)
+        self.assertContains(res, project.name, 5, 200)
 
 
 class CreateProjectWorkflowTests(test.BaseAdminViewTests):
@@ -178,9 +178,6 @@ class CreateProjectWorkflowTests(test.BaseAdminViewTests):
         project_identity.domain_get(
             IsA(http.HttpRequest),
             domain_id).AndReturn(self.domain)
-        project_identity.project_get(
-            IsA(http.HttpRequest),
-            None, admin=True).AndReturn(project)
 
         self.mox.ReplayAll()
 
@@ -273,14 +270,18 @@ class CreateProjectWorkflowTests(test.BaseAdminViewTests):
         setattr(nec_set, 'DISINHERITED_ROLES', [])
         self.test_add_member_post()
 
-    @test.create_stubs({project_identity: ('project_user_list',)})
+    @test.create_stubs({project_identity: ('project_user_list',
+                                           'project_group_list')})
     def test_remove_user(self):
         user = self.users.get(id="2")
         project = self.groups.get(id="1")
         project_members = self.users.list()
+        groups = self.groups
 
-        project_identity.project_user_list(project=project.id).\
-            AndReturn(project_members)
+        project_identity.project_group_list(
+            project=project.id).AndReturn(groups)
+        project_identity.project_user_list(
+            project=project.id).AndReturn(project_members)
 
         self.mox.ReplayAll()
 
