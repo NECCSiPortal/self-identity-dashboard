@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Project Management' %}{% endblock %}
+
+{% block main %}
+    {{ project_members_table.render }}
+{% endblock %}

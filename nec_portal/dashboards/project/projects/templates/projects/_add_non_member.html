@@ -1,0 +1,9 @@
+{% extends "horizon/common/_modal_form_add_members.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block modal-header %}{% trans "Add Project Assignment" %}{% endblock %}
+
+{% block modal-footer %}
+  <a href="{% url 'horizon:project:projects:manage_members' project.id %}" class="btn btn-default cancel">{% trans "Cancel" %}</a>
+{% endblock %}

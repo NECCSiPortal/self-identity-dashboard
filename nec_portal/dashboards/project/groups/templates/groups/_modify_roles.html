@@ -1,0 +1,43 @@
+{% extends "horizon/common/_modal_form.html" %}
+{% load i18n %}
+
+{% block modal-body %}
+<h3>{% trans "Group" %}: {{ group_name }}</h3>
+{% for role_list in roles_list %}
+  <table width="100%" style="table-layout: fixed;" >
+    <tr>
+      <th align="center">
+        {{ role_list.name }}
+      </th>
+      {% for region_name in role_list.dsp_col %}
+      <th align="center">
+        {{ region_name }}
+      </th>
+      {% endfor %}
+    </tr>
+
+    {% for role_name, row_data in role_list.dsp_row.iteritems %}
+    <tr>
+      <td>
+        {{ role_name }}
+      </td>
+      {% for data in row_data %}
+      {% if data.0 == 0 %}
+      <td align="center" style="background-color: #e2e2e2">
+        <input type="checkbox" name="checked" value={{ data.3 }}{% if data.1 == 1 %} checked{% endif %} disabled />
+      </td>
+      {% else %}{% if data.0 == 1 %}
+      <td align="center">
+        <input type="checkbox" name="checked" value={{ data.3 }}{% if data.1 == 1 %} checked{% endif %} />
+      </td>
+      {% else %}
+      <td align="center" style="background-color: #e2e2e2"></td>
+      {% endif %}{% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+
+  </table>
+{% endfor %}
+<input type="hidden" name="group_id" value={{ group_id }}>
+{% endblock %}
